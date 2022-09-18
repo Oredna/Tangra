@@ -1,0 +1,52 @@
+captainVersion: 4
+services:
+    $$cap_appname-db:
+        image: postgres:13-alpine
+        volumes:
+            - $$cap_appname-db:/var/lib/postgresql/data
+        restart: always
+        environment:
+            POSTGRES_PASSWORD: $$cap_db_pass
+        caproverExtra:
+            notExposeAsWebApp: 'true'
+    $$cap_appname-web:
+        depends_on:
+            - $$cap_appname-db
+        image: wangqiru/ttrss:latest
+        volumes:
+            - feed-icons:/var/www/feed-icons/
+        environment:
+            SELF_URL_PATH: $$cap_path
+            DB_PASS: $$cap_db_pass
+            DB_HOST: srv-captain--$$cap_appname-db
+            PUID: $$cap_puid
+            PGID: $$cap_pgid
+caproverOneClickApp: 
+    variables:
+        - id: $$cap_db_pass
+          label: Database password
+          defaultValue: password
+          description: This is the password to your db, please do not use "password" or "admin"
+          validRegex: /.{1,}/
+        - id: $$cap_path
+          label: Web app domain
+          defaultValue: google.com
+          description: put the full domain that the app will have after - https://appname-web.something.mydomain.com
+          validRegex: /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
+        - id: $$cap_puid
+          label: PUID
+          defaultValue: '1000'
+          validRegex: /^[0-9]*$/
+        - id: $$cap_pgid
+          label: PGID
+          defaultValue: '1000'
+          validRegex: /^[0-9]*$/
+    instructions:
+       start: >-
+           Starting the build process
+       end: >-
+            Ending the build process. You can login now with username:admin and password: password.
+    displayName: Tiny Tiny RSS
+    isOfficial: true
+    description: Awesome TTRSS aims to provide a powerful Dockerized all-in-one solution for Tiny Tiny RSS, an open source RSS feed reader and aggregator written in PHP, with enhanced user experience via simplified deployment and a list of curated plugins.
+    documentation: https://ttrss.henry.wang/
