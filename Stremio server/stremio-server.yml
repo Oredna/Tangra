@@ -1,0 +1,40 @@
+captainVersion: 4
+services:
+    $$cap_appname:
+        image: sleeyax/stremio-streaming-server
+        restart: always
+        volumes:
+            - $$cap_appname-media:/root/.stremio-server
+        environment:
+            FORCE_HTTPS: $$cap_https
+            FIX_UNSUPPORTED_MEDIA: $$cap_media
+            FIX_CORS: $$cap_cors
+        caproverExtra:
+            containerHttpPort: '11470'
+caproverOneClickApp: 
+    variables:
+        - id: $$cap_https
+          label: Force https
+          defaultValue: 1
+          description: Enable this if you are using a reverse HTTPS proxy (e.g localtunnel) to access the streaming server.
+          validRegex: /[0-1]/
+        - id: $$cap_media
+          label: Unsupported media
+          defaultValue: 1
+          description: Attempts to fix 'unsupported media' errors. Only enable this if you are experiencing this exact issue as this patch is not well tested
+          validRegex: /[0-1]/
+        - id: $$cap_cors
+          label: CORS
+          defaultValue: 1
+          description: Fixes browser CORS issues. Strongly recommended to enable this if you're accessing the Stremio web interface via a domain that isn't whitelisted.
+          validRegex: /[0-1]/
+    instructions:
+       start: >-
+           Starting the build process
+       end: >-
+            Done! 😄
+            Your service is available at http://$$cap_appname.$$cap_root_domain
+    displayName: Stremio streaming server
+    isOfficial: true
+    description: This image allows you to run Stremio's streaming server as a standalone server. 
+    documentation: https://github.com/sleeyax/stremio-streaming-server
